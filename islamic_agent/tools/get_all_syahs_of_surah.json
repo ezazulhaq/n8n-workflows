@@ -1,0 +1,93 @@
+{
+    "name": "Get All Ayahs of Surah",
+    "nodes": [
+        {
+            "parameters": {
+                "workflowInputs": {
+                    "values": [
+                        {
+                            "name": "surah_id"
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.executeWorkflowTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                112,
+                16
+            ],
+            "id": "59a46615-195f-4320-ba29-b764ff30938c",
+            "name": "When Executed by Another Workflow"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://macznmfhfslwgrqjcabe.supabase.co/rest/v1/rpc/get_surah_translation",
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "supabaseApi",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "p_surah_id",
+                            "value": "={{ $json.surah_id }}"
+                        },
+                        {
+                            "name": "p_translator_name",
+                            "value": "sahih"
+                        },
+                        {
+                            "name": "p_language_code",
+                            "value": "en"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                336,
+                16
+            ],
+            "id": "fb303287-7f4c-4ed8-9437-7e1d3429e54b",
+            "name": "Get Surah Full",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "OSj0qvTFUqi7wpcH",
+                    "name": "Supabase Anon Key"
+                },
+                "supabaseApi": {
+                    "id": "RU56QCQQYWxsaqaG",
+                    "name": "Supabase account"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "When Executed by Another Workflow": {
+            "main": [
+                [
+                    {
+                        "node": "Get Surah Full",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "6ca0ba40-4df2-44f7-a062-e86d3b95c53a",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+    },
+    "id": "yfJI2Nx9YWpcznc2",
+    "tags": []
+}
