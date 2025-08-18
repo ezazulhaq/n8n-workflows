@@ -65,7 +65,15 @@
             }
         }
     ],
-    "pinData": {},
+    "pinData": {
+        "When Executed by Another Workflow": [
+            {
+                "json": {
+                    "surah_id": 2
+                }
+            }
+        ]
+    },
     "connections": {
         "When Executed by Another Workflow": {
             "main": [
@@ -83,7 +91,7 @@
     "settings": {
         "executionOrder": "v1"
     },
-    "versionId": "6ca0ba40-4df2-44f7-a062-e86d3b95c53a",
+    "versionId": "b76ea6ba-fb2f-4138-ac7d-cf4c4a559c4c",
     "meta": {
         "templateCredsSetupCompleted": true,
         "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"

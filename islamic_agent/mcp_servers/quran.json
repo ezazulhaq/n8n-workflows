@@ -1,0 +1,222 @@
+{
+    "name": "Quran MCP Server",
+    "nodes": [
+        {
+            "parameters": {
+                "authentication": "bearerAuth",
+                "path": "e47dcb14-f234-4d07-b3ca-e97d6812f28d"
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+            "typeVersion": 2,
+            "position": [
+                -112,
+                -16
+            ],
+            "id": "17183abf-edbd-4375-80d6-eadba3dc54c2",
+            "name": "MCP Server Trigger",
+            "webhookId": "e47dcb14-f234-4d07-b3ca-e97d6812f28d",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "OSj0qvTFUqi7wpcH",
+                    "name": "Supabase Anon Key"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                176,
+                416
+            ],
+            "id": "d6c47d35-e8f3-4ff0-9c05-2afca6ba247d",
+            "name": "Embeddings Google Gemini1",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "gGqeo8g2DGaUXqOJ",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "description": "Call this tool to get all the Ayah based on Surah number as input or even mentioned about Surah",
+                "workflowId": {
+                    "__rl": true,
+                    "value": "yfJI2Nx9YWpcznc2",
+                    "mode": "list",
+                    "cachedResultName": "Get All Ayahs of Surah"
+                },
+                "workflowInputs": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "surah_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('surah_id', ``, 'number') }}"
+                    },
+                    "matchingColumns": [
+                        "surah_id"
+                    ],
+                    "schema": [
+                        {
+                            "id": "surah_id",
+                            "displayName": "surah_id",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "canBeUsedToMatch": true,
+                            "type": "string",
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+            "typeVersion": 2.2,
+            "position": [
+                -160,
+                208
+            ],
+            "id": "e313d597-96d3-43e1-b695-fc0e4cd385b1",
+            "name": "Get Ayahs"
+        },
+        {
+            "parameters": {
+                "description": "Call this tool if any specific Ayah of a Surah is requested in the formats like\n1. Verse (Surah):(Ayah)\n2. Surah (number) and Ayah (number)\n3. Surah (name), Ayah (number)",
+                "workflowId": {
+                    "__rl": true,
+                    "value": "owrGoln2UMtickrP",
+                    "mode": "list",
+                    "cachedResultName": "Get One Ayah"
+                },
+                "workflowInputs": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "surah_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('surah_id', ``, 'number') }}",
+                        "ayah_number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ayah_number', ``, 'number') }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "surah_id",
+                            "displayName": "surah_id",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "canBeUsedToMatch": true,
+                            "type": "number"
+                        },
+                        {
+                            "id": "ayah_number",
+                            "displayName": "ayah_number",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "canBeUsedToMatch": true,
+                            "type": "number"
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+            "typeVersion": 2.2,
+            "position": [
+                -32,
+                208
+            ],
+            "id": "778c896e-328a-4c94-b5ca-69d218beec80",
+            "name": "Get Specific Ayah"
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked to get any information from Quran",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "quran",
+                    "mode": "list",
+                    "cachedResultName": "quran"
+                },
+                "topK": 10,
+                "options": {
+                    "pineconeNamespace": "full_quran"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                96,
+                208
+            ],
+            "id": "b8967b54-6766-4a80-8d67-1dadd00f2563",
+            "name": "Quran Vector Store1",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Embeddings Google Gemini1": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Quran Vector Store1",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Ayahs": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Specific Ayah": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Quran Vector Store1": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "f5176392-8cbf-4d38-afd2-3d7fbce805e3",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+    },
+    "id": "N7bBzXxug82TxofI",
+    "tags": []
+}
