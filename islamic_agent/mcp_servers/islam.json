@@ -1,0 +1,164 @@
+{
+    "name": "Islam MCP Server",
+    "nodes": [
+        {
+            "parameters": {
+                "authentication": "bearerAuth",
+                "path": "d7eb773e-714e-4289-bf31-53ebb6479e46"
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+            "typeVersion": 2,
+            "position": [
+                272,
+                -16
+            ],
+            "id": "ba276833-4e6b-4ecf-89d9-26e92754b8eb",
+            "name": "MCP Server Trigger",
+            "webhookId": "d7eb773e-714e-4289-bf31-53ebb6479e46",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "OSj0qvTFUqi7wpcH",
+                    "name": "Supabase Anon Key"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                336,
+                416
+            ],
+            "id": "c387b981-caa9-4061-b2a9-b021eb3a7896",
+            "name": "Embeddings Google Gemini1",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "gGqeo8g2DGaUXqOJ",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool for comprehensive biography of the Prophet Muhammad (peace be upon him), focusing on his life and the early days of Islam",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "islam",
+                    "mode": "list",
+                    "cachedResultName": "islam"
+                },
+                "topK": 5,
+                "includeDocumentMetadata": false,
+                "options": {
+                    "pineconeNamespace": "life_of_prophet_muhammad"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                112,
+                208
+            ],
+            "id": "8aebf609-d3ce-4120-9328-85dbc1787d99",
+            "name": "Muhammad(pbuh) Biography Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool to get the Epic Stories of the Shia-Sunni Split in Islam",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "islam",
+                    "mode": "list",
+                    "cachedResultName": "islam"
+                },
+                "topK": 5,
+                "includeDocumentMetadata": false,
+                "options": {
+                    "pineconeNamespace": "shia_sunni"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                400,
+                208
+            ],
+            "id": "868a34df-3b46-4b11-b129-c98c06ba6d8f",
+            "name": "Shia-Sunni Split Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Embeddings Google Gemini1": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Muhammad(pbuh) Biography Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Shia-Sunni Split Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Muhammad(pbuh) Biography Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Shia-Sunni Split Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "993f2d41-f93e-4389-9a46-f2e636117c00",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+    },
+    "id": "EDqy9d9YagfXsxG7",
+    "tags": [
+        {
+            "createdAt": "2025-08-06T11:28:11.194Z",
+            "updatedAt": "2025-08-06T11:28:11.194Z",
+            "id": "G4pcn2ri04Yjuj59",
+            "name": "muhammad(pbuh)"
+        }
+    ]
+}
