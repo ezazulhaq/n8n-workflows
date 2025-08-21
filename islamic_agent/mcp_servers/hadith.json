@@ -1,0 +1,201 @@
+{
+    "name": "Hadith MCP Server",
+    "nodes": [
+        {
+            "parameters": {
+                "authentication": "bearerAuth",
+                "path": "584f56d8-c860-44dd-8566-30ea1875e227"
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+            "typeVersion": 2,
+            "position": [
+                144,
+                -16
+            ],
+            "id": "c390a8bf-b773-4138-b67b-2b1916f293f5",
+            "name": "MCP Server Trigger",
+            "webhookId": "584f56d8-c860-44dd-8566-30ea1875e227",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "OSj0qvTFUqi7wpcH",
+                    "name": "Supabase Anon Key"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                208,
+                416
+            ],
+            "id": "99705c8b-71b8-4c4c-8a38-ec8cc7495b41",
+            "name": "Embeddings Google Gemini1",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "gGqeo8g2DGaUXqOJ",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked to get any information from Sahih Bukhari hadith",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "sahih_bukhari"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                -160,
+                208
+            ],
+            "id": "1a8a3d3e-acac-43a2-ac93-65cdb845dd1a",
+            "name": "Sahih_Bukhari Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked to get any information from Sahih Bukhari hadith",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "sahih_muslim"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                128,
+                208
+            ],
+            "id": "1d00a18f-fe68-45a1-bf12-0ee17d18a85f",
+            "name": "Sahih_Muslim Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked for practical guide to applying Islamic teachings in daily life",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "riyad_us_saliheen"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                416,
+                208
+            ],
+            "id": "ec7a0bf4-18c4-444d-bba7-16688827ec39",
+            "name": "Riyad Us Saliheen Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Embeddings Google Gemini1": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Sahih_Bukhari Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sahih_Muslim Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Riyad Us Saliheen Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sahih_Bukhari Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sahih_Muslim Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Riyad Us Saliheen Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "MCP Server Trigger",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "7564cc85-227f-4ac5-a78a-d1e09562df00",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+    },
+    "id": "vWtdoOCZ4kF0Th24",
+    "tags": []
+}
