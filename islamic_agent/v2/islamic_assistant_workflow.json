@@ -1,0 +1,607 @@
+{
+    "name": "Islamic Agent",
+    "nodes": [
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.3,
+            "position": [
+                -576,
+                0
+            ],
+            "id": "836ea31c-2a03-4ee4-9770-10d229e15bb7",
+            "name": "When chat message received",
+            "webhookId": "f7417a9b-e614-4544-9e37-089faea6d470",
+            "alwaysOutputData": false
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.3,
+            "position": [
+                -224,
+                224
+            ],
+            "id": "c7e340f7-6d14-4adf-9d96-ec3139919649",
+            "name": "Memory"
+        },
+        {
+            "parameters": {
+                "toolDescription": "AI Agent that can call tools related to Quran",
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "# Role\nYou are an Islamic knowledge assistant specializing in Quran and Hadith. Use available tools to provide accurate Islamic guidance.\n\n## Tools\n- **Quran Agent**: Retrieves Quranic verses, Arabic text, and searches Quran knowledge base\n- **Hadith Agent**: Accesses Sahih Bukhari, Sahih Muslim, and Riyad Us Saliheen collections\n- **Islamic History Agent**: Provides Prophet Muhammad (pbuh) biography and Islamic historical events\n\n## Rules\n1. **Scope**: Only answer Islamic questions (theology, practice, history, jurisprudence, Quran, Hadith, Prophet's biography)\n2. **Non-Islamic queries**: \"I apologize, but I specialize in Islamic knowledge only. Please ask about Islamic topics.\"\n3. **No tool results**: Use the same non-Islamic response\n4. **Greeting**: \"Assalamu Alaykum. I'm your Islamic knowledge assistant. How can I help with Islamic matters?\"\n5. **Citations**: Include Quran/Hadith references when available\n6. **Approach**: Provide scholarly, respectful responses based on authentic sources\n\n## Response Format\n- Be concise but comprehensive\n- Use tools before responding\n- Cite sources when possible\n- Maintain Islamic scholarly tone",
+                    "maxIterations": 5
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 2.2,
+            "position": [
+                -96,
+                224
+            ],
+            "id": "3c03339a-0aeb-4d7b-bc85-c6fe41969a00",
+            "name": "Quran Agent"
+        },
+        {
+            "parameters": {
+                "description": "Call this tool to get specific Ayah of a Surah",
+                "workflowId": {
+                    "__rl": true,
+                    "value": "owrGoln2UMtickrP",
+                    "mode": "list",
+                    "cachedResultName": "Get One Ayah"
+                },
+                "workflowInputs": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "surah_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('surah_id', ``, 'number') }}",
+                        "ayah_number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ayah_number', ``, 'number') }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "surah_id",
+                            "displayName": "surah_id",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "canBeUsedToMatch": true,
+                            "type": "number"
+                        },
+                        {
+                            "id": "ayah_number",
+                            "displayName": "ayah_number",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "canBeUsedToMatch": true,
+                            "type": "number"
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+            "typeVersion": 2.2,
+            "position": [
+                -128,
+                432
+            ],
+            "id": "5819d37d-2fa6-484f-b555-3356751d7ad7",
+            "name": "Get Ayah"
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked to get any information from Quran",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "quran",
+                    "mode": "list",
+                    "cachedResultName": "quran"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "full_quran"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                16,
+                432
+            ],
+            "id": "de86b3a3-7ec5-45bb-abb6-751503dbb079",
+            "name": "Quran Knowledge",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "options": {
+                    "systemMessage": "# Role\nYou are an Islamic knowledge assistant specializing in Quran and Hadith. Use available tools to provide accurate Islamic guidance.\n\n## Tools\n- **Quran Agent**: Retrieves Quranic verses and searches Quran knowledge base\n- **Hadith Agent**: Accesses Hadith collections and Islamic teachings\n\n## Rules\n1. **Scope**: Only answer Islamic questions (theology, practice, history, jurisprudence)\n2. **Non-Islamic queries**: \"I apologize, but I specialize in Islamic knowledge only. Please ask about Islamic topics.\"\n3. **No tool results**: Use the same non-Islamic response\n4. **No automatic greeting**: Do not greet users unless they greet you first with words like \"hello\", \"hi\", \"assalamu alaykum\", or similar. If user greets mid-conversation, respond with simple acknowledgment like \"Assalamu Alaykum. I'm your Islamic knowledge assistant. How can I help with Islamic matters?\" without repeating previous responses\n5. **Citations**: Include Quran/Hadith references when available\n6. **Approach**: Provide scholarly, respectful responses based on authentic sources\n\n## Response Format\n- Be concise but comprehensive\n- Use tools before responding\n- Cite sources when possible\n- Maintain Islamic scholarly tone",
+                    "maxIterations": 5
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 2.2,
+            "position": [
+                -256,
+                0
+            ],
+            "id": "67590bda-71cb-493c-95f6-0d68e3486937",
+            "name": "Islamic Assistant"
+        },
+        {
+            "parameters": {
+                "toolDescription": "AI Agent that can call tools related to Hadith and Islamic preaching",
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "# Role\nYou are a Hadith scholar assistant specializing in prophetic traditions and Islamic teachings. Use available tools to provide authentic Hadith-based guidance.\n\n## Tools\n- **Sahih Bukhari Hadith**: Primary tool for Islamic teachings and prophetic traditions\n- **Sahih Muslim Hadith**: Secondary authentic source for prophetic traditions\n- **Riyad Us Saliheen**: Additional resource for Islamic knowledge and spiritual guidance\n\n## Rules\n1. **Scope**: Only answer Hadith and Islamic teaching questions (traditions, practices, ethics, spiritual guidance)\n2. **Non-Islamic queries**: \"Apologies, your question is out of my scope.\"\n3. **Tool Priority**: Use Sahih Bukhari by default, then Sahih Muslim, then Riyad Us Saliheen as needed\n4. **Approach**: Provide scholarly responses with Hadith references\n5. **Use tools**: Always search before responding\n\n## Response Format\n- Use tools to gather authentic traditions\n- Provide Hadith citations (collection, book, number)\n- Include narrator chain when relevant\n- Maintain scholarly Islamic context",
+                    "maxIterations": 5
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 2.2,
+            "position": [
+                304,
+                224
+            ],
+            "id": "d6eb166d-350a-4fc7-899e-d32080ca7c63",
+            "name": "Hadith Agent"
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when required to get any information from Sahih Bukhari hadith",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "sahih_bukhari"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                304,
+                432
+            ],
+            "id": "d127bde2-ea8b-4ad0-a838-ddcc2242d76d",
+            "name": "Sahih Bukhari Hadith",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked for practical guide to applying Islamic teachings in daily life",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "riyad_us_saliheen"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                592,
+                432
+            ],
+            "id": "33ae0c6b-c375-4922-aa0f-9d983879d673",
+            "name": "Riyad Us Saliheen Hadith",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool when asked to get any information from Sahih Bukhari hadith",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "hadith",
+                    "mode": "list",
+                    "cachedResultName": "hadith"
+                },
+                "topK": 5,
+                "options": {
+                    "pineconeNamespace": "sahih_muslim"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                880,
+                432
+            ],
+            "id": "74ac7c6d-3852-46d8-a8cc-50988c4f18a8",
+            "name": "Sahih Muslim Hadith",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "llama-3.1-8b-instant",
+                "options": {
+                    "temperature": 0.3
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                -352,
+                224
+            ],
+            "id": "6377725d-5ca9-4b02-9ee0-d545630e60c1",
+            "name": "llama 3.1 Assistant",
+            "credentials": {
+                "groqApi": {
+                    "id": "64T3zjGNPkUW4j4Y",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                1024,
+                640
+            ],
+            "id": "1bf276b0-b200-4275-8d17-0508c1bdc739",
+            "name": "Embedding",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "gGqeo8g2DGaUXqOJ",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "toolDescription": "AI Agent that can call tools related to Prophet Muhammad's (pbuh) biography and Islamic historical events",
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "# Role\nYou are an Islamic history scholar assistant specializing in Prophet Muhammad's (pbuh) biography and Islamic historical events. Use available tools to provide authentic historical guidance.\n\n## Tools\n- **Muhammad(pbuh) Biography**: Comprehensive biography of Prophet Muhammad (peace be upon him), covering his life and early Islamic period\n- **Shia-Sunni Split**: Historical analysis of the Shia-Sunni division and its origins\n\n## Rules\n1. **Scope**: Only answer Prophet Muhammad (pbuh) biography and Islamic history questions\n2. **Non-Islamic queries**: \"Apologies, your question is out of my scope.\"\n3. **Approach**: Provide scholarly responses with historical references\n4. **Use tools**: Always search before responding\n5. **Respectful tone**: Always use \"pbuh\" or \"peace be upon him\" when mentioning the Prophet\n\n## Response Format\n- Use tools to gather authentic historical information\n- Provide historical citations and sources\n- Include chronological context when relevant\n- Maintain scholarly Islamic historical perspective",
+                    "maxIterations": 5
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 2.2,
+            "position": [
+                1312,
+                224
+            ],
+            "id": "cc0bb996-8f39-40c5-9136-556513da48e9",
+            "name": "Islamic History Agent"
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool for comprehensive biography of the Prophet Muhammad (peace be upon him), focusing on his life and the early days of Islam",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "islam",
+                    "mode": "list",
+                    "cachedResultName": "islam"
+                },
+                "topK": 5,
+                "includeDocumentMetadata": false,
+                "options": {
+                    "pineconeNamespace": "life_of_prophet_muhammad"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                1168,
+                432
+            ],
+            "id": "060502d7-095a-4bda-a9a1-e7f16004ef17",
+            "name": "Muhammad(pbuh) Biography",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool to get the Epic Stories of the Shia-Sunni Split in Islam",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "islam",
+                    "mode": "list",
+                    "cachedResultName": "islam"
+                },
+                "topK": 5,
+                "includeDocumentMetadata": false,
+                "options": {
+                    "pineconeNamespace": "shia_sunni"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                1456,
+                432
+            ],
+            "id": "4cc780ec-56e4-4e0f-8ed9-8d1d889e5604",
+            "name": "Shia-Sunni Split",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "ZrKwo2WoVVZGjLWw",
+                    "name": "PineconeApi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "meta-llama/llama-3.1-8b-instruct",
+                "options": {
+                    "temperature": 0.3
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+            "typeVersion": 1,
+            "position": [
+                -256,
+                432
+            ],
+            "id": "a53f70f4-705a-45e5-aa28-a2a72e34a398",
+            "name": "llama 3.1 Agent",
+            "credentials": {
+                "openRouterApi": {
+                    "id": "HyWhsdOJdi95hE1m",
+                    "name": "OpenRouter account"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "When chat message received": {
+            "main": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Quran Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Ayah": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Quran Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Quran Knowledge": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Quran Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Hadith Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sahih Bukhari Hadith": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Hadith Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Riyad Us Saliheen Hadith": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Hadith Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sahih Muslim Hadith": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Hadith Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "llama 3.1 Assistant": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embedding": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Sahih Bukhari Hadith",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sahih Muslim Hadith",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Riyad Us Saliheen Hadith",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Quran Knowledge",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Muhammad(pbuh) Biography",
+                        "type": "ai_embedding",
+                        "index": 0
+                    },
+                    {
+                        "node": "Shia-Sunni Split",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Islamic History Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Islamic Assistant",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Muhammad(pbuh) Biography": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Islamic History Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Shia-Sunni Split": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Islamic History Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "llama 3.1 Agent": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Quran Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    },
+                    {
+                        "node": "Hadith Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    },
+                    {
+                        "node": "Islamic History Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "1f8d26da-a08b-461d-84ba-7312eb131a78",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+    },
+    "id": "Qn4coCMFTAutPNHF",
+    "tags": []
+}
