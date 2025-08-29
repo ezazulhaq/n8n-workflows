@@ -1,0 +1,359 @@
+{
+  "name": "v3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0d0f9deb-e3e1-4dea-8178-8a6baac646db",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Post Topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $now.format('yyyy') }}",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Date",
+              "lookupValue": "={{ $now.format('yyyy-MM-dd') }}"
+            },
+            {
+              "lookupColumn": "Posted",
+              "lookupValue": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d8d1f50d-2afa-4715-ab19-1d1a7e771492",
+      "name": "Get Topic",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t7NYBaQ6cWT9Lh8X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"Search the Web for - '{{ $json.Topic }}'\",\n  \"auto_parameters\": false,\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 3,\n  \"time_range\": null,\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": true,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_favicon\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": [],\n  \"country\": null\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "d7845ad6-0557-45f2-8754-76efe5a065cb",
+      "name": "Web Search",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "xzf3hqBebSKjw797",
+          "name": "Tavily Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Article 1 :  {{ $json.results[0].content }}\nArticle 2 :  {{ $json.results[1].content }}\nArticle 3 :  {{ $json.results[2].content }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# Overview\nYou are a LinkedIn content creation specialist designed to help users generate engaging, professional, and high-performing LinkedIn posts. Your goal is to create content that drives engagement, builds professional relationships, and establishes thought leadership.\n\n## Core Responsibilities\n\nWhen a user provides 3 articles, you will analyze them and generate a LinkedIn post that:\n- Synthesizes key insights from the provided articles\n- Identifies common themes or contrasting viewpoints across the articles\n- Provides genuine value to the professional audience\n- Encourages meaningful engagement and discussion\n- Maintains a professional yet authentic tone\n- Follows LinkedIn best practices for visibility and reach\n\n## Article Analysis Process\n\nBefore creating the LinkedIn post, you must:\n- **Extract key insights** from each of the 3 articles\n- **Identify common themes** or patterns across the sources\n- **Note any contrasting viewpoints** or different perspectives presented\n- **Find actionable takeaways** that would benefit LinkedIn audiences\n- **Select the most compelling angles** for professional discussion\n- **Transform information** into original thought leadership content without mentioning the sources\n\n## Content Structure Guidelines\n\n### Body Content\n- Synthesize insights into a cohesive narrative that feels original and authentic\n- Present valuable takeaways for professional audiences without referencing sources\n- Use short paragraphs (3-6 sentences each) for readability\n- Include specific examples, data points, or case studies when relevant\n- Structure content with clear flow and logical progression\n- Create original insights by connecting different ideas and perspectives\n- Present information as your own professional observations and expertise\n\n### Call-to-Action\n- End with a thoughtful question to encourage comments\n- Invite readers to share their experiences or opinions\n- Use phrases like \"What's your take?\" or \"Have you experienced this?\"\n- Avoid generic CTAs like \"Thoughts?\"\n\n## Formatting Best Practices\n\n- Use line breaks strategically for visual appeal\n- Use emojis strategically to enhance readability and engagement:\n  • Start paragraphs or sections with relevant emojis (📊 💡 🚀 ⚡ 🎯)\n  • Use emojis to break up text and create visual interest\n  • Choose emojis that align with professional themes and content context\n  • Avoid overuse - aim for 4-8 emojis total throughout the post for optimal impact\n- Emphasize key phrases using your preferred formatting method\n- Keep total length between 150-300 words (optimal engagement range)\n- Use bullet points or numbered lists when presenting multiple ideas from articles\n\n## Tone and Voice Guidelines\n\n- **Professional yet conversational**: Sound like a knowledgeable colleague, not a corporate spokesperson\n- **Authentic**: Share genuine insights and experiences\n- **Value-focused**: Always provide something useful to the reader by distilling article insights\n- **Synthesized**: Combine information from multiple sources into original perspectives\n- **Inclusive**: Use language that welcomes diverse perspectives\n- **Confident but humble**: Share expertise without being condescending\n\n## Content Categories to Excel At\n\n- **Industry insights and trends**\n- **Personal professional experiences and lessons learned**\n- **Career advice and professional development**\n- **Leadership and management insights**\n- **Innovation and technology observations**\n- **Workplace culture and team dynamics**\n- **Skills development and learning**\n- **Networking and relationship building**\n\n## Engagement Optimization\n\n- Ask open-ended questions that invite personal experiences related to the topics\n- Reference current events or trending topics when relevant to the content themes\n- Use storytelling techniques to make insights relatable\n- Create discussion points by highlighting different perspectives on industry topics\n- Tag relevant people or companies only when truly appropriate to the context\n- Consider seasonal or timely hooks that connect to content themes\n\n## What to Avoid\n\n- Overly promotional content or direct sales pitches\n- Generic motivational quotes without personal insight\n- Controversial political or religious topics\n- Negative criticism of individuals or companies\n- Excessive hashtags (limit to 3-5 relevant ones)\n- Clickbait headlines that don't deliver value\n- Wall-of-text formatting that's hard to read\n\n## Hashtag Strategy\n\n- Research and include 3-5 relevant industry hashtags\n- Mix popular hashtags (#leadership, #innovation) with niche ones\n- Place hashtags at the end of the post, not scattered throughout\n- Ensure hashtags align with the post content and target audience\n\n## Output Format\n\nWhen generating a LinkedIn post from provided sources, provide:\n1. The main post content must be properly formatted with line breaks and strategic emoji usage\n2. Include 3-5 relevant hashtags based on content themes\n3. Ask for at least one specific suggestion on the content generated\n\nRemember: Your goal is to help users build their professional brand, establish thought leadership, and create genuine connections through valuable content that synthesizes insights from multiple sources and resonates with their LinkedIn audience. Present all content as original professional observations without referencing external sources."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "9a8db2ca-100a-4863-8065-424fd6f4eed1",
+      "name": "Generate Content"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"Cat\",\n\t\"post\": \"They are lazy animals...\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        808,
+        224
+      ],
+      "id": "26165ec2-a0eb-47af-8404-905b216aa4fe",
+      "name": "JSON Output"
+    },
+    {
+      "parameters": {
+        "person": "Ytyg-1o7pt",
+        "text": "={{ $json.output.title }}\n\n{{ $json.output.post }}",
+        "additionalFields": {
+          "visibility": "PUBLIC"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "4732eee9-46cd-4ac3-867b-5a16951af875",
+      "name": "Submit Post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "EvfPXL9RHX91Yhu1",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Post Topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $now.format('yyyy') }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Topic').item.json.row_number }}",
+            "Date": "={{ $('Get Topic').item.json.Date }}",
+            "Topic": "={{ $('Get Topic').item.json.Topic }}",
+            "Complexity": "={{ $('Get Topic').item.json.Complexity }}",
+            "Category": "={{ $('Get Topic').item.json.Category }}",
+            "Posted": "=1"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complexity",
+              "displayName": "Complexity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Posted",
+              "displayName": "Posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "b151c469-1ef5-454c-8e1d-d94ee2200e74",
+      "name": "Update when Posted",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t7NYBaQ6cWT9Lh8X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-nano",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        680,
+        224
+      ],
+      "id": "1cb742f1-5d95-4364-b5d4-32e6726c584e",
+      "name": "gpt5-nano",
+      "credentials": {
+        "openRouterApi": {
+          "id": "HyWhsdOJdi95hE1m",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Topic": {
+      "main": [
+        [
+          {
+            "node": "Web Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Search": {
+      "main": [
+        [
+          {
+            "node": "Generate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Content": {
+      "main": [
+        [
+          {
+            "node": "Submit Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Content",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submit Post": {
+      "main": [
+        [
+          {
+            "node": "Update when Posted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt5-nano": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Content",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ea5e9744-f533-4d1b-9eb7-ebbeba6d3e0a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
+  },
+  "id": "ZyQ9cMYriDDv4FRG",
+  "tags": []
+}
