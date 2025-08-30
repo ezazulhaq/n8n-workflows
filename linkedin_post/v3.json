@@ -7,7 +7,7 @@
       "typeVersion": 1,
       "position": [
         0,
-        0
+        -128
       ],
       "id": "0d0f9deb-e3e1-4dea-8178-8a6baac646db",
       "name": "When clicking ‘Execute workflow’"
@@ -44,7 +44,7 @@
       "typeVersion": 4.7,
       "position": [
         224,
-        0
+        -128
       ],
       "id": "d8d1f50d-2afa-4715-ab19-1d1a7e771492",
       "name": "Get Topic",
@@ -52,32 +52,6 @@
         "googleSheetsOAuth2Api": {
           "id": "t7NYBaQ6cWT9Lh8X",
           "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.tavily.com/search",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "httpBearerAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"query\": \"Search the Web for - '{{ $json.Topic }}'\",\n  \"auto_parameters\": false,\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 3,\n  \"time_range\": null,\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": true,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_favicon\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": [],\n  \"country\": null\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        448,
-        0
-      ],
-      "id": "d7845ad6-0557-45f2-8754-76efe5a065cb",
-      "name": "Web Search",
-      "credentials": {
-        "httpBearerAuth": {
-          "id": "xzf3hqBebSKjw797",
-          "name": "Tavily Auth account"
         }
       }
     },
@@ -94,7 +68,7 @@
       "typeVersion": 2.2,
       "position": [
         672,
-        0
+        -128
       ],
       "id": "9a8db2ca-100a-4863-8065-424fd6f4eed1",
       "name": "Generate Content"
@@ -106,8 +80,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        808,
-        224
+        816,
+        96
       ],
       "id": "26165ec2-a0eb-47af-8404-905b216aa4fe",
       "name": "JSON Output"
@@ -124,7 +98,7 @@
       "typeVersion": 1,
       "position": [
         1024,
-        0
+        -32
       ],
       "id": "4732eee9-46cd-4ac3-867b-5a16951af875",
       "name": "Submit Post",
@@ -158,7 +132,8 @@
             "Topic": "={{ $('Get Topic').item.json.Topic }}",
             "Complexity": "={{ $('Get Topic').item.json.Complexity }}",
             "Category": "={{ $('Get Topic').item.json.Category }}",
-            "Posted": "=1"
+            "Posted": "=1",
+            "Content": "={{ $json.output.title }}\n\n{{ $json.output.post }}"
           },
           "matchingColumns": [
             "row_number"
@@ -211,6 +186,16 @@
               "canBeUsedToMatch": true
             },
             {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
               "id": "row_number",
               "displayName": "row_number",
               "required": false,
@@ -230,8 +215,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1248,
-        0
+        1024,
+        -224
       ],
       "id": "b151c469-1ef5-454c-8e1d-d94ee2200e74",
       "name": "Update when Posted",
@@ -252,8 +237,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        680,
-        224
+        688,
+        96
       ],
       "id": "1cb742f1-5d95-4364-b5d4-32e6726c584e",
       "name": "gpt5-nano",
@@ -261,6 +246,33 @@
         "openRouterApi": {
           "id": "HyWhsdOJdi95hE1m",
           "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "=Search the Web for - '{{ $json.Topic }}'",
+        "options": {
+          "topic": "general",
+          "search_depth": "basic",
+          "chunks_per_source": 3,
+          "max_results": 3,
+          "days": 7,
+          "include_answer": "basic"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "2e95dc86-d3db-4195-b176-f8fe8f88a046",
+      "name": "Web Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "ox82IMfxCy2zPzJK",
+          "name": "Tavily account"
         }
       }
     }
@@ -289,22 +301,16 @@
         ]
       ]
     },
-    "Web Search": {
-      "main": [
-        [
-          {
-            "node": "Generate Content",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Generate Content": {
       "main": [
         [
           {
             "node": "Submit Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update when Posted",
             "type": "main",
             "index": 0
           }
@@ -324,13 +330,7 @@
     },
     "Submit Post": {
       "main": [
-        [
-          {
-            "node": "Update when Posted",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "gpt5-nano": {
@@ -343,13 +343,24 @@
           }
         ]
       ]
+    },
+    "Web Search": {
+      "main": [
+        [
+          {
+            "node": "Generate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ea5e9744-f533-4d1b-9eb7-ebbeba6d3e0a",
+  "versionId": "618f4947-b3ac-42c6-ba0e-343731aebb63",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
