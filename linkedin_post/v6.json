@@ -10,16 +10,17 @@
                 -576
             ],
             "id": "5eb2e622-1876-45b8-a591-cb7193d3b79b",
-            "name": "When clicking ‘Execute workflow’"
+            "name": "When clicking ‘Execute workflow’",
+            "disabled": true
         },
         {
             "parameters": {
                 "documentId": {
                     "__rl": true,
-                    "value": "10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg",
+                    "value": "10jTkcOiZkXM7MUX7C-E_-5LGgo_H5LjH2aSvs4erqZg",
                     "mode": "list",
-                    "cachedResultName": "LinkedIn Post Topics",
-                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg/edit?usp=drivesdk"
+                    "cachedResultName": "LinkedIn Post Java Topics",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10jTkcOiZkXM7MUX7C-E_-5LGgo_H5LjH2aSvs4erqZg/edit?usp=drivesdk"
                 },
                 "sheetName": {
                     "__rl": true,
@@ -114,10 +115,10 @@
                 "operation": "update",
                 "documentId": {
                     "__rl": true,
-                    "value": "10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg",
+                    "value": "10jTkcOiZkXM7MUX7C-E_-5LGgo_H5LjH2aSvs4erqZg",
                     "mode": "list",
-                    "cachedResultName": "LinkedIn Post Topics",
-                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10TNwbeZUZRn7Gq4rpIHHZ8JMj1AaAVDovalSyogTseg/edit?usp=drivesdk"
+                    "cachedResultName": "LinkedIn Post Java Topics",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10jTkcOiZkXM7MUX7C-E_-5LGgo_H5LjH2aSvs4erqZg/edit?usp=drivesdk"
                 },
                 "sheetName": {
                     "__rl": true,
@@ -278,8 +279,7 @@
             ],
             "id": "3d9fcce6-5ef2-45f3-8b64-32491b684670",
             "name": "Topic to Post",
-            "webhookId": "13570fa8-3c5b-4236-a8e6-ee555aebcc51",
-            "disabled": true
+            "webhookId": "13570fa8-3c5b-4236-a8e6-ee555aebcc51"
         },
         {
             "parameters": {
@@ -320,7 +320,7 @@
                 "promptType": "define",
                 "text": "={{ $json.output.title }}\n\n{{ $json.output.post }}",
                 "options": {
-                    "systemMessage": "# Overview\nYou are a highly skilled Content Reviewer and Editor. Your sole task is to take user-provided content and produce a final, polished, and correct version.\n\n## Instructions\n-**Proofread**: Correct all grammatical errors, spelling mistakes, punctuation errors and typos.\n-**Enhance Clarity**: Rephrase sentences to be more concise, readable, and easy to understand. Eliminate jargon and wordiness.\n-**Ensure Cohesion**: Improve the logical flow and coherence of the text, ensuring that sentences and paragraphs connect smoothly.\n-**Maintain Original Intent and Emojis**: Your final output must faithfully preserve the original message, tone, and core purpose of the content. Do not remove or alter any emojis. Do not add new information, make assumptions, or alter the fundamental meaning.\n\nOutput:\nProvide only the final, corrected version of the text. Do not include any explanations, change summaries, or \"before and after\" comparisons. The output must be a direct, final result."
+                    "systemMessage": "# Overview\nYou are a highly skilled Content Reviewer and Editor. Your sole task is to take user-provided content and produce a final, polished, and correct version.\n\n## Instructions\n-**Proofread**: Correct all grammatical errors, spelling mistakes, punctuation errors and typos.\n-**Enhance Clarity**: Rephrase sentences to be more concise, readable, and easy to understand. Eliminate jargon and wordiness.\n-**Ensure Cohesion**: Improve the logical flow and coherence of the text, ensuring that sentences and paragraphs connect smoothly.\n-**Maintain Original Intent and Emojis**: Your final output must faithfully preserve the original message, tone, and core purpose of the content. Do not remove or alter any emojis. Do not add new information, make assumptions, or alter the fundamental meaning.\n-**Markdown Removal**: Strictly remove any markdown characters.\n-**Validate Hashtags**: The content must contain hashtags at the end, validate and if not found include 3-5 hashtags relevant to the content.\n\nOutput:\nProvide only the final, corrected version of the text. Do not include any explanations, change summaries, or \"before and after\" comparisons. The output must be a direct, final result."
                 }
             },
             "type": "@n8n/n8n-nodes-langchain.agent",
@@ -509,7 +509,7 @@
     "settings": {
         "executionOrder": "v1"
     },
-    "versionId": "e6e433c2-04fb-477f-87cb-2bdbda645a45",
+    "versionId": "4abd4a9a-2064-49c9-9f0c-bb5289dd7b83",
     "meta": {
         "templateCredsSetupCompleted": true,
         "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
