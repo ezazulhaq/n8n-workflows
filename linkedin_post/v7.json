@@ -10,8 +10,7 @@
                 -800
             ],
             "id": "13b938e0-5d2d-4ed5-9fbc-698fcbe34bd0",
-            "name": "When clicking ‘Execute workflow’",
-            "disabled": true
+            "name": "When clicking ‘Execute workflow’"
         },
         {
             "parameters": {
@@ -111,7 +110,7 @@
                         "Complexity": "={{ $('Get Topic').item.json.Complexity }}",
                         "Category": "={{ $('Get Topic').item.json.Category }}",
                         "Posted": "=1",
-                        "Content": "={{ $json.output}}"
+                        "Content": "={{ $('Review Content').item.json.output }}"
                     },
                     "matchingColumns": [
                         "row_number"
@@ -256,7 +255,8 @@
             ],
             "id": "3cb4fded-ff37-441d-9c55-d95b2cf98c80",
             "name": "Topic to Post",
-            "webhookId": "768ad5dc-05ce-40ea-8b0e-f3b4f258c15d"
+            "webhookId": "768ad5dc-05ce-40ea-8b0e-f3b4f258c15d",
+            "disabled": true
         },
         {
             "parameters": {
@@ -297,7 +297,7 @@
                 "promptType": "define",
                 "text": "={{ $json.output.post }}",
                 "options": {
-                    "systemMessage": "# Overview\nYou are a highly skilled Content Reviewer and Editor. Your sole task is to take user-provided content and produce a final, polished, and correct version.\n\n## Instructions\n-**Proofread**: Correct all grammatical errors, spelling mistakes, punctuation errors and typos.\n-**Enhance Clarity**: Rephrase sentences to be more concise, readable, and easy to understand. Eliminate jargon and wordiness.\n-**Ensure Cohesion**: Improve the logical flow and coherence of the text, ensuring that sentences and paragraphs connect smoothly.\n-**Maintain Original Intent and Emojis**: Your final output must faithfully preserve the original message, tone, and core purpose of the content. Do not remove or alter any emojis. Do not add new information, make assumptions, or alter the fundamental meaning.\n\nOutput:\nProvide only the final, corrected version of the text. Do not include any explanations, change summaries, or \"before and after\" comparisons. The output must be a direct, final result."
+                    "systemMessage": "# Overview\nYou are a highly skilled Content Reviewer and Editor. Your sole task is to take user-provided content and produce a final, polished, and correct version.\n\n## Instructions\n-**Proofread**: Correct all grammatical errors, spelling mistakes, punctuation errors and typos.\n-**Enhance Clarity**: Rephrase sentences to be more concise, readable, and easy to understand. Eliminate jargon and wordiness.\n-**Ensure Cohesion**: Improve the logical flow and coherence of the text, ensuring that sentences and paragraphs connect smoothly.\n-**Maintain Original Intent and Emojis**: Your final output must faithfully preserve the original message, tone, and core purpose of the content. Do not remove or alter any emojis. Do not add new information, make assumptions, or alter the fundamental meaning.\n-**Markdown Removal**: Strictly remove any markdown characters.\n\nOutput:\nProvide only the final, corrected version of the text. Do not include any explanations, change summaries, or \"before and after\" comparisons. The output must be a direct, final result."
                 }
             },
             "type": "@n8n/n8n-nodes-langchain.agent",
@@ -311,54 +311,10 @@
         },
         {
             "parameters": {
-                "model": "openai/gpt-oss-20b",
-                "options": {
-                    "temperature": 0.2
-                }
-            },
-            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
-            "typeVersion": 1,
-            "position": [
-                992,
-                -480
-            ],
-            "id": "aa1ceb2d-f3d8-49d9-b400-1d3d53283cee",
-            "name": "gpt-oss-20b",
-            "credentials": {
-                "groqApi": {
-                    "id": "64T3zjGNPkUW4j4Y",
-                    "name": "Groq account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "model": "openai/gpt-5-nano",
-                "options": {
-                    "temperature": 0.2
-                }
-            },
-            "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-            "typeVersion": 1,
-            "position": [
-                448,
-                -480
-            ],
-            "id": "d3d84a0b-13fa-4b21-b9d4-6e39c2407d51",
-            "name": "gpt-5-nano",
-            "credentials": {
-                "openRouterApi": {
-                    "id": "HyWhsdOJdi95hE1m",
-                    "name": "OpenRouter account"
-                }
-            }
-        },
-        {
-            "parameters": {
                 "promptType": "define",
                 "text": "={{ $json.output }}",
                 "options": {
-                    "systemMessage": "# Overview\nCreate a high-quality, visually engaging image that captures the core message and tone of the LinkedIn post from content provided. The image should be professional and suitable for LinkedIn's business/social networking audience. Use relevant symbols, colors, and styles that complement the post's theme.\n\n## Instruction:\n- Avoid excessive text in the image; focus on strong visual storytelling and clear, concise imagery.\n- Exclude any hashtags and questionary from content.\n- Do not give any text, only give image data as response."
+                    "systemMessage": "# Overview\nCreate a high-quality, visually engaging image that captures the core message and tone of the LinkedIn post from content provided. The image should be professional and suitable for LinkedIn's business/social networking audience. Use relevant symbols, colors, and styles that complement the post's theme.\n\n## Instruction:\n- Avoid excessive text in the image; focus on strong visual storytelling and clear, concise imagery.\n- Strictly exclude any hashtags and questionary from content.\n- Do not give any text, only give image data as response."
                 }
             },
             "type": "@n8n/n8n-nodes-langchain.agent",
@@ -430,9 +386,59 @@
                     "name": "LinkedIn account"
                 }
             }
+        },
+        {
+            "parameters": {
+                "model": "openai/gpt-oss-20b",
+                "options": {
+                    "temperature": 0.2
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                992,
+                -480
+            ],
+            "id": "aa1ceb2d-f3d8-49d9-b400-1d3d53283cee",
+            "name": "gpt-oss-20b",
+            "credentials": {
+                "groqApi": {
+                    "id": "64T3zjGNPkUW4j4Y",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "openai/gpt-5-nano",
+                "options": {
+                    "temperature": 0.2
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+            "typeVersion": 1,
+            "position": [
+                448,
+                -480
+            ],
+            "id": "5552a49e-ad03-4e70-9f14-3fd6a65fe6ce",
+            "name": "gpt-5-nano",
+            "credentials": {
+                "openRouterApi": {
+                    "id": "HyWhsdOJdi95hE1m",
+                    "name": "OpenRouter account"
+                }
+            }
         }
     ],
-    "pinData": {},
+    "pinData": {
+        "When clicking ‘Execute workflow’": [
+            {
+                "json": {}
+            }
+        ]
+    },
     "connections": {
         "When clicking ‘Execute workflow’": {
             "main": [
@@ -527,28 +533,6 @@
                 []
             ]
         },
-        "gpt-oss-20b": {
-            "ai_languageModel": [
-                [
-                    {
-                        "node": "Review Content",
-                        "type": "ai_languageModel",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "gpt-5-nano": {
-            "ai_languageModel": [
-                [
-                    {
-                        "node": "Generate Content",
-                        "type": "ai_languageModel",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
         "Image Generator": {
             "main": [
                 [
@@ -591,13 +575,35 @@
             "main": [
                 []
             ]
+        },
+        "gpt-oss-20b": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Review Content",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "gpt-5-nano": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Generate Content",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
         }
     },
     "active": false,
     "settings": {
         "executionOrder": "v1"
     },
-    "versionId": "21d861b7-e6eb-4a8d-9139-5947b5b783b3",
+    "versionId": "dd9d2673-186c-44fe-a997-240fe3eaaab3",
     "meta": {
         "templateCredsSetupCompleted": true,
         "instanceId": "d34596626d0961342284b5f413f6cb9c63790fe09b6d140e1107f45cab225aef"
