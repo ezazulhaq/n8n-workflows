@@ -1,0 +1,520 @@
+{
+  "name": "Islamic Assistant Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.session_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "7c4bbb93-b57a-49d8-88e7-804abbd0765b",
+      "name": "Conversation Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.input }}",
+        "options": {
+          "systemMessage": "# Islamic Knowledge Assistant\n\nYou are a comprehensive Islamic knowledge assistant with access to authentic Islamic sources.\n\n## Available Tools\n1. **Quran Knowledge**: Search the complete Quran for verses and interpretations\n2. **Get Specific Ayah**: Retrieve exact verse by Surah and Ayah number\n3. **Sahih Bukhari**: Access authentic Hadith from Sahih Bukhari\n4. **Sahih Muslim**: Access authentic Hadith from Sahih Muslim  \n5. **Riyad Us Saliheen**: Practical Islamic guidance and teachings\n6. **Prophet Biography**: Comprehensive life story of Prophet Muhammad (pbuh)\n7. **Islamic History**: Historical events and Shia-Sunni context\n\n## Response Guidelines\n\n### Scope\n- **ONLY answer Islamic questions**: Quran, Hadith, Islamic history, jurisprudence, theology, practice\n- **For non-Islamic queries**: \"I apologize, but I specialize in Islamic knowledge only. Please ask about Islamic topics such as Quran, Hadith, Islamic history, or religious practices.\"\n\n### Greeting Behavior\n- **First interaction**: Respond naturally to the user's question without automatic greeting\n- **If user greets explicitly** (Assalamu Alaykum, Hello, Hi): Respond with \"Wa alaykumu assalam. I'm your Islamic knowledge assistant. How can I help with Islamic matters today?\"\n\n### Tool Usage Priority\n1. For Quranic questions → Use \"Quran Knowledge\" first\n2. For specific verse requests → Use \"Get Specific Ayah\" with exact Surah:Ayah\n3. For Hadith questions → Prioritize Sahih Bukhari, then Sahih Muslim\n4. For practical guidance → Use Riyad Us Saliheen\n5. For Prophet's life → Use Prophet Biography\n6. For historical context → Use Islamic History\n\n### Citation Standards\n- Always include source references (Quran: Surah X, Ayah Y)\n- For Hadith: Include collection name and reference number when available\n- Maintain scholarly Islamic tone with respect for Prophet Muhammad (pbuh)\n- Your final response must not exceed more than 250 words\n\n### Error Handling\n- If no relevant results from tools: \"I couldn't find specific information on this topic in my Islamic sources. Could you rephrase your question or ask about a related Islamic topic?\"\n- Always attempt to use tools before responding\n- Provide authentic, source-based responses only",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        904,
+        0
+      ],
+      "id": "ea226932-3267-40f5-8ef5-2f0eff9ac45d",
+      "name": "Islamic Knowledge Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the complete Quran for verses, topics, and interpretations. Use this for general Quranic knowledge queries.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "quran",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "full_quran"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        224
+      ],
+      "id": "8894ce66-b021-44a3-a674-09c13e686ecf",
+      "name": "Quran Knowledge",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Retrieve a specific Ayah from the Quran. Requires exact Surah ID (1-114) and Ayah number. Use only when user requests a specific verse reference.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9dmX3g95SKg5KnlG",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9dmX3g95SKg5KnlG",
+          "cachedResultName": "Get One Ayah"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "surah_id": "={{ $fromAI('surah_id', 'Surah number from 1 to 114', 'number') }}",
+            "ayah_number": "={{ $fromAI('ayah_number', 'Ayah/verse number within the specified Surah', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "surah_id",
+              "displayName": "surah_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "ayah_number",
+              "displayName": "ayah_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        224
+      ],
+      "id": "aa7b7d59-203e-4d1d-891f-016229de575f",
+      "name": "Get Specific Ayah"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Access authentic Hadith from Sahih Bukhari collection. Primary source for prophetic traditions and Islamic teachings.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "hadith",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "sahih_bukhari"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        224
+      ],
+      "id": "cfd4cf3b-e979-4ab8-a82d-b00d0af7dbd0",
+      "name": "Sahih Bukhari Hadith",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Access authentic Hadith from Sahih Muslim collection. Secondary source for prophetic traditions.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "hadith",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "sahih_muslim"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        224
+      ],
+      "id": "0c2b15d2-c3c0-4ac0-b6b2-d16875992c9f",
+      "name": "Sahih Muslim Hadith",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Access Riyad Us Saliheen for practical Islamic guidance and spiritual teachings for daily life applications.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "hadith",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "riyad_us_saliheen"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1472,
+        224
+      ],
+      "id": "5de5658c-6be7-42dd-bc1d-427df9c9bcf3",
+      "name": "Riyad Us Saliheen",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Comprehensive biography of Prophet Muhammad (peace be upon him), covering his life story and early Islamic period.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "islam",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "life_of_prophet_muhammad"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        224
+      ],
+      "id": "296b4925-c50a-4222-98a3-30253c5f7d0b",
+      "name": "Prophet Muhammad Biography",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Historical information about Islamic events, including the Shia-Sunni split and early Islamic history.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "islam",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "shia_sunni"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2048,
+        224
+      ],
+      "id": "98dcaa15-8c05-4fcd-96a3-73f6383fc4e4",
+      "name": "Islamic History",
+      "credentials": {
+        "pineconeApi": {
+          "id": "3kkSXYYR91EnKKEB",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        432
+      ],
+      "id": "e2ea00f9-2261-42f3-b078-511ed6184153",
+      "name": "Embedding Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dqeiOFxopnztGqlM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "8dc262d0-0a12-4f9d-9b4b-068c80a40cfb",
+      "name": "gpt-5-mini",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0EZEFhwgMs9qqDNN",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ff33b738-bea6-4916-9d8c-a3460790269b",
+        "authentication": "basicAuth",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "91f9757f-964e-4680-827c-b8d2d7dbe3b0",
+      "name": "Webhook",
+      "webhookId": "ff33b738-bea6-4916-9d8c-a3460790269b",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "D5ii8MiBWMl26HHk",
+          "name": "The Taqwa Tracker"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2416,
+        0
+      ],
+      "id": "5b344360-a8b4-41c9-b595-404bfd3e14dd",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quran Knowledge": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Specific Ayah": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sahih Bukhari Hadith": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sahih Muslim Hadith": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Riyad Us Saliheen": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prophet Muhammad Biography": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Islamic History": {
+      "ai_tool": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embedding Model": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Quran Knowledge",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Sahih Bukhari Hadith",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Sahih Muslim Hadith",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Riyad Us Saliheen",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Prophet Muhammad Biography",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Islamic History",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Islamic Knowledge Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Islamic Knowledge Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "d685e24d-03b5-4cf4-838e-6716ac4c7845",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a81b74f8fd23524d319f5e756b0627d090a9be4ebddd5b55452fd4259ebd3ad0"
+  },
+  "id": "gqDSowCRHiWxgeCr",
+  "tags": [
+    {
+      "updatedAt": "2025-11-10T01:27:05.432Z",
+      "createdAt": "2025-11-10T01:27:05.432Z",
+      "id": "ex3yDEwx5V7B2nkC",
+      "name": "Islam"
+    }
+  ]
+}
